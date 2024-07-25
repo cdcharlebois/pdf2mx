@@ -24,6 +24,6 @@ export async function connectToModel(token: string, appId: string, branch: strin
 export async function commit(workingCopy: OnlineWorkingCopy, model: IModel, message: string){
     await model.flushChanges()
     await workingCopy.commitToRepository("main", {
-        "commitMessage": message
+        "commitMessage": message 
     });
 }
