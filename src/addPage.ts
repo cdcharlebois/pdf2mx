@@ -1,6 +1,7 @@
-import { pages, projects, JavaScriptSerializer } from "mendixmodelsdk";
+import { pages, projects, JavaScriptSerializer, domainmodels, datatypes, IModel, texts } from "mendixmodelsdk";
 import fs from "fs";
 import { commit, connectToModel } from "./connect";
+import { IInputModel, IMendixAttribute } from "./createEntity";
 
 
 async function createSamplePage() {    
@@ -24,4 +25,109 @@ async function createSamplePage() {
     await commit(workingCopy, model, "added sample page")
 }
 
-createSamplePage();
+function createInputForAttribute(attr: IMendixAttribute, input: IInputModel, model: IModel, index: Number) : pages.Widget {
+    const ar = domainmodels.AttributeRef.create(model);
+    const lt = pages.ClientTemplate.create(model);
+    const tx = texts.Translation.create(model);
+    tx.text = attr.name;
+    tx.languageCode = "en_US";
+    const t = texts.Text.create(model);
+    t.translations.push(tx);
+    lt.template = t;
+    const attribute = model.findAttributeByQualifiedName(`${input.moduleName}.${input.entityName}.${attr.name}`);
+    if (!attribute) throw new Error(`Cannout find attribute ${input.moduleName}.${input.entityName}.${attr.name}`);
+    ar.attribute = attribute;
+    switch (attr.type){
+        case "String":
+            const tb = pages.TextBox.create(model);
+            tb.name = `textBox${index}`;
+            tb.labelTemplate = lt;
+            tb.attributeRef = ar;
+            return tb;
+        default:
+            const tbd = pages.TextBox.create(model);
+            tbd.name = `textBox${index}`;
+            tbd.labelTemplate = lt;
+            tbd.attributeRef = ar;
+            return tbd;
+    }
+}
+
+function createSaveButton(model: IModel) : pages.ActionButton {
+    const tx = texts.Translation.create(model);
+    const lt = pages.ClientTemplate.create(model);
+    const a = pages.SaveChangesClientAction.create(model);
+    tx.text = "Save";
+    tx.languageCode = "en_US";
+    const t = texts.Text.create(model);
+    t.translations.push(tx);
+    lt.template = t;
+    const ab = pages.ActionButton.create(model);
+    ab.name = "saveButton";
+    ab.caption = lt;
+    ab.buttonStyle = pages.ButtonStyle.Success;
+    ab.action = a;
+    return ab;
+    
+}
+
+export async function createPage(input: IInputModel) {
+    const {model, workingCopy} = await connectToModel();
+    const entityName = `${input.moduleName}.${input.entityName}`;
+    const pageName = `${input.entityName}_NewEdit`
+    const module = model.allModules().find(m => m.name === input.moduleName);
+    if (!module) throw new Error(`Module ${input.moduleName} not found`);
+    const entity = model.findEntityByQualifiedName(entityName);
+    if (!entity) throw new Error(`Entity ${entityName} not found`)
+    // following the serialized file.
+
+    const ot = datatypes.ObjectType.create(model);
+    ot.entity = entity
+
+    const pp = pages.PageParameter.create(model);
+    pp.name = input.entityName;
+    pp.parameterType = ot;
+
+    const der = domainmodels.DirectEntityRef.create(model);
+    der.entity = entity;
+    
+    const pv = pages.PageVariable.create(model);
+    
+    const dvs = pages.DataViewSource.create(model);
+    dvs.entityRef = der;
+    dvs.sourceVariable = pv;
+
+    const widgets : pages.Widget[] = []
+    input.attributes.forEach((a, i) => {
+        widgets.push(createInputForAttribute(a, input, model, i))
+    })
+    // widgets.push(createSaveButton(model));
+    
+    const dv = pages.DataView.create(model);
+    dv.name = "dataView1";
+    dv.dataSource = dvs;
+    dv.widgets.push(...widgets);
+    dv.footerWidgets.push(createSaveButton(model));
+
+    const lca = pages.LayoutCallArgument.create(model);
+    // @ts-ignore
+    lca.__parameter.updateWithRawValue("Atlas_Core.Atlas_Default.Main");
+    lca.widgets.push(dv);
+
+    const lc = pages.LayoutCall.create(model);
+    lc.layout = model.findLayoutByQualifiedName("Atlas_Core.Atlas_Default")
+    lc.arguments.push(lca);
+
+    const page = pages.Page.createIn(module);
+    page.name = pageName;
+    page.parameters.push(pp)
+    page.layoutCall = lc;
+    
+    pv.pageParameter = pp;
+    
+    
+    await commit(workingCopy, model, `add Page ${pageName}`);
+}
+
+// createSamplePage();
+

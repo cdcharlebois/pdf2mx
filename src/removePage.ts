@@ -9,14 +9,14 @@ async function deleteSamplePage() {
     if (!p) {
         throw new Error("failed to find a project");
     }
-    const page = model.allPages().find(i => i.name === "SamplePage");
+    const page = model.allPages().find(i => i.name === "SomeEntity_NewEdit");
     const module = model.allModules().find(i => i.name === "SampleModule")
     const folder = model.allFolders().find(i => i.name === "SampleFolder")
     if (page) {
         console.log(`Found page. Deleting it`)
         await page?.delete();
-        await folder?.delete();
-        await module?.delete();
+        // await folder?.delete();
+        // await module?.delete();
     } else {
         console.log("Didn't find the page")
     }

@@ -1,11 +1,11 @@
 import { IModel, domainmodels, projects } from "mendixmodelsdk";
 import { commit, connectToModel } from "./connect"
 
-interface IMendixAttribute {
+export interface IMendixAttribute {
     name: string,
     type: "Boolean" | "DateTime" | "Decimal" | "Enumeration" | "Integer" | "Long" | "String"
 }
-interface IInputModel {
+export interface IInputModel {
     attributes: IMendixAttribute[],
     entityName: string,
     moduleName: string
@@ -68,4 +68,4 @@ export async function createEntity(input: IInputModel) {
 
 }
 
-createEntity(JSON_MODEL);
+// createEntity(JSON_MODEL);
