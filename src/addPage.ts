@@ -1,11 +1,10 @@
 import { pages, projects, JavaScriptSerializer } from "mendixmodelsdk";
 import fs from "fs";
 import { commit, connectToModel } from "./connect";
-import 'dotenv/config';
-const { MENDIX_TOKEN, APP_ID, BRANCH } = process.env;
+
 
 async function createSamplePage() {    
-    const res = await connectToModel(MENDIX_TOKEN as string, APP_ID as string, BRANCH as string);
+    const res = await connectToModel();
     const { model, workingCopy } = res;
     const p = model.allProjects().find(project => true);
     if (!p) {

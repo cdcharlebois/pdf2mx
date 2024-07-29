@@ -19,6 +19,7 @@
     "start": "node dist/index.js",
     "add": "node dist/addPage.js",
     "remove": "node dist/removePage.js",
+    "entityAdd": "node dist/createEntity.js",
     "dev": "nodemon --exec \"npm run build\" --watch src -e .ts",
     "build": "tsc"
   },

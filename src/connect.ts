@@ -1,19 +1,21 @@
 import { IModel, IWorkingCopy } from "mendixmodelsdk";
 import { MendixPlatformClient, OnlineWorkingCopy, setPlatformConfig } from "mendixplatformsdk";
+import 'dotenv/config';
+const { MENDIX_TOKEN, APP_ID, BRANCH } = process.env;
 
 export interface IConnectionReturn {
     model: IModel,
     workingCopy: OnlineWorkingCopy
 }
 
-export async function connectToModel(token: string, appId: string, branch: string) : Promise<IConnectionReturn> {
+export async function connectToModel() : Promise<IConnectionReturn> {
     setPlatformConfig({
-        "mendixToken": token
+        "mendixToken": MENDIX_TOKEN
     })
     const client = new MendixPlatformClient();
-    const app = await client.getApp(appId) // app id
+    const app = await client.getApp(APP_ID as string) // app id
     // this takes the name of the branch to checkout
-    const workingCopy = await app.createTemporaryWorkingCopy(branch);
+    const workingCopy = await app.createTemporaryWorkingCopy(BRANCH as string);
     const model = await workingCopy.openModel();
     return {
         model,

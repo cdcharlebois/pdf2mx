@@ -6,18 +6,21 @@
 
 import { pages, domainmodels, projects } from "mendixmodelsdk";
 import { MendixPlatformClient, setPlatformConfig } from "mendixplatformsdk";
-import 'dotenv/config';
+
 import { commit, connectToModel } from "./connect"
 import serializeUnit, { IUnitType } from "./serializeUnit";
+import 'dotenv/config';
+import { createEntity } from "./createEntity";
 const { MENDIX_TOKEN, APP_ID, BRANCH } = process.env;
 
 
 
 
 async function main() {
-    const res = await connectToModel(MENDIX_TOKEN as string, APP_ID as string, BRANCH as string);
+    const res = await connectToModel();
     const { model, workingCopy } = res;
-    await serializeUnit("TargetPage", IUnitType.page, model);
+    await serializeUnit("SampleModule.Sample", IUnitType.entity, model);
+    // await createEntity();
 }
 
 main();
