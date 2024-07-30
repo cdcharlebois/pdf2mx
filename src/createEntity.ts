@@ -26,19 +26,43 @@ const JSON_MODEL : IInputModel = {
 }
 
 function getAttributeType(model: IModel, attr:IMendixAttribute) : domainmodels.AttributeType {
+    let at : domainmodels.AttributeType | undefined;
+    
     switch (attr.type){
-        case "String":
-            return domainmodels.StringAttributeType.create(model);
+        case "Boolean":
+            at = domainmodels.BooleanAttributeType.create(model);
+            break;
+        case "Enumeration":
+            
+        case "DateTime":
+            at = domainmodels.DateTimeAttributeType.create(model);
+            break;
+        case "Decimal":
+            at = domainmodels.DecimalAttributeType.create(model);
             break;
         case "Integer":
-            return domainmodels.IntegerAttributeType.create(model);
+            at = domainmodels.IntegerAttributeType.create(model);
+            break;
+        case "Long":
+            at = domainmodels.LongAttributeType.create(model);
+            break;
+        case "String":
+            at = domainmodels.StringAttributeType.create(model);
+            break;
         default:
-            return domainmodels.StringAttributeType.create(model);
+            at = domainmodels.StringAttributeType.create(model);
+            break;
     }
+    return at;
 }
 
 function createAttribute(model: IModel, data: IMendixAttribute) : domainmodels.Attribute{
     const attr = domainmodels.Attribute.create(model);
+    const sv = domainmodels.StoredValue.create(model);
+    if (data.type === "Boolean") {
+        sv.defaultValue = "false"
+        attr.value = sv;
+    }
     attr.name = data.name;
     attr.type = getAttributeType(model, data);
     return attr;

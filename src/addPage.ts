@@ -37,20 +37,31 @@ function createInputForAttribute(attr: IMendixAttribute, input: IInputModel, mod
     const attribute = model.findAttributeByQualifiedName(`${input.moduleName}.${input.entityName}.${attr.name}`);
     if (!attribute) throw new Error(`Cannout find attribute ${input.moduleName}.${input.entityName}.${attr.name}`);
     ar.attribute = attribute;
+
+    let wid : pages.AttributeWidget | undefined;
+
     switch (attr.type){
+        case "Boolean":
+        case "Enumeration":
+            wid = pages.RadioButtonGroup.create(model);
+            break;
+        case "DateTime":
+            wid = pages.DatePicker.create(model);
+            break;
+        case "Decimal":
+        case "Integer":
+        case "Long":
         case "String":
-            const tb = pages.TextBox.create(model);
-            tb.name = `textBox${index}`;
-            tb.labelTemplate = lt;
-            tb.attributeRef = ar;
-            return tb;
         default:
-            const tbd = pages.TextBox.create(model);
-            tbd.name = `textBox${index}`;
-            tbd.labelTemplate = lt;
-            tbd.attributeRef = ar;
-            return tbd;
+            wid = pages.TextBox.create(model);
+            break;
+           
     }
+    if (!wid) throw new Error(`Could not determine widget type: ${attr.type}`)
+    wid.name = `radioButtons${index}`
+    wid.labelTemplate = lt;
+    wid.attributeRef = ar;
+    return wid;
 }
 
 function createSaveButton(model: IModel) : pages.ActionButton {

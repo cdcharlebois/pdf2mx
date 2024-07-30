@@ -23,6 +23,10 @@ const JSON_MODEL : IInputModel = {
             name: "SomeNumber",
             type: "Integer"
         },
+        {
+            name: "SomeBoolean",
+            type: "Boolean"
+        },
     ]
 }
 

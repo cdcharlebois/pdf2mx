@@ -20,6 +20,7 @@
     "add": "node dist/addPage.js",
     "remove": "node dist/removePage.js",
     "entityAdd": "node dist/createEntity.js",
+    "serialize": "node dist/api/serialize.js",
     "dev": "nodemon --exec \"npm run build\" --watch src -e .ts",
     "build": "tsc"
   },

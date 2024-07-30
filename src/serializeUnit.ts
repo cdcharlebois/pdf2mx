@@ -1,11 +1,13 @@
 import { IModel, JavaScriptSerializer } from "mendixmodelsdk";
 import fs from "fs"
+import { connectToModel } from "./connect";
 
 export enum IUnitType {
     page = "page",
     entity = "entity"
 }
-async function serializeUnit(name: string, type: IUnitType, model: IModel) {
+async function serializeUnit(name: string, type: IUnitType) {
+    const {model, workingCopy} = await connectToModel();
     let doc;
     if (type === IUnitType.page) {
         doc = model.allPages().find(p => p.name === name);
@@ -23,6 +25,8 @@ async function serializeUnit(name: string, type: IUnitType, model: IModel) {
         const entity = module.domainModel.entities.find(e => e.name === name.split(".")[1])
         if (!entity) throw new Error(`document ${name} not found as ${type}`)
         fs.writeFileSync(`./${name}_serialized.js`, JavaScriptSerializer.serializeToJs(await module.domainModel.load()))
+    } else {
+        throw new Error(`unsupported unit type: ${type}`);
     }
 }
 
