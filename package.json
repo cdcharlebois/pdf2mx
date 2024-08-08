@@ -22,7 +22,9 @@
     "entityAdd": "node dist/createEntity.js",
     "serialize": "node dist/api/serialize.js",
     "dev": "nodemon --exec \"npm run build\" --watch src -e .ts",
-    "build": "tsc"
+    "build": "tsc",
+    "zip": "zip -r updateModel.zip . -x .env",
+    "upload": "aws lambda update-function-code --function-name updateModel --zip-file fileb://./updateModel.zip"
   },
   "author": "Conner Charlebois & Luke Karlovich",
   "license": "ISC"
