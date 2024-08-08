@@ -3,6 +3,7 @@ import { commit, connectToModel } from "./connect"
 
 export interface IMendixAttribute {
     name: string,
+    label?: string,
     type: "Boolean" | "DateTime" | "Decimal" | "Enumeration" | "Integer" | "Long" | "String"
 }
 export interface IInputModel {
@@ -10,21 +11,6 @@ export interface IInputModel {
     entityName: string,
     moduleName: string
 }
-const JSON_MODEL : IInputModel = {
-    moduleName: "SampleModule",
-    entityName: "SomeEntity",
-    attributes: [
-        {
-            name: "SomeName",
-            type: "String"
-        },
-        {
-            name: "SomeNumber",
-            type: "Integer"
-        },
-    ]
-}
-
 function getAttributeType(model: IModel, attr:IMendixAttribute) : domainmodels.AttributeType {
     let at : domainmodels.AttributeType | undefined;
     
@@ -56,6 +42,19 @@ function getAttributeType(model: IModel, attr:IMendixAttribute) : domainmodels.A
     return at;
 }
 
+/**
+ * 
+ * @param {string} rawValue value read from the form
+ * @returns {string} a mendix attribute-safe name
+ */
+export function getSafeAttributeName(rawValue: string): string {
+    let newValue = rawValue.replace(/\W/g, "_");
+    if (newValue.charAt(0).match(/\d/g)) {
+        newValue = "_" + newValue
+    }
+    return newValue;
+}
+
 function createAttribute(model: IModel, data: IMendixAttribute) : domainmodels.Attribute{
     const attr = domainmodels.Attribute.create(model);
     const sv = domainmodels.StoredValue.create(model);
@@ -63,8 +62,10 @@ function createAttribute(model: IModel, data: IMendixAttribute) : domainmodels.A
         sv.defaultValue = "false"
         attr.value = sv;
     }
-    attr.name = data.name;
-    attr.type = getAttributeType(model, data);
+    const safeName = getSafeAttributeName(data.name);
+    attr.name = safeName;
+    attr.type = getAttributeType(model, data);;
+    console.debug(`creating attribute name: ${safeName} with type ${data.type}`);
     return attr;
 }
 

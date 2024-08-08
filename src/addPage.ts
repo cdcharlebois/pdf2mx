@@ -1,7 +1,7 @@
 import { pages, projects, JavaScriptSerializer, domainmodels, datatypes, IModel, texts } from "mendixmodelsdk";
 import fs from "fs";
 import { commit, connectToModel } from "./connect";
-import { IInputModel, IMendixAttribute } from "./createEntity";
+import { IInputModel, IMendixAttribute, getSafeAttributeName } from "./createEntity";
 
 
 async function createSamplePage() {    
@@ -18,7 +18,7 @@ async function createSamplePage() {
     const m = projects.Module.createIn(p);
     m.name = "SampleModule"
     const f = projects.Folder.createIn(m);
-    f.name = "SampleFolder"
+    f.name = "SampleFolder" 
     const page = pages.Page.createIn(f);
     page.name = "SamplePage";
     page.layoutCall = layoutCall;
@@ -29,13 +29,13 @@ function createInputForAttribute(attr: IMendixAttribute, input: IInputModel, mod
     const ar = domainmodels.AttributeRef.create(model);
     const lt = pages.ClientTemplate.create(model);
     const tx = texts.Translation.create(model);
-    tx.text = attr.name;
+    tx.text = attr.label ? attr.label : attr.name;
     tx.languageCode = "en_US";
     const t = texts.Text.create(model);
     t.translations.push(tx);
     lt.template = t;
-    const attribute = model.findAttributeByQualifiedName(`${input.moduleName}.${input.entityName}.${attr.name}`);
-    if (!attribute) throw new Error(`Cannout find attribute ${input.moduleName}.${input.entityName}.${attr.name}`);
+    const attribute = model.findAttributeByQualifiedName(`${input.moduleName}.${input.entityName}.${getSafeAttributeName(attr.name)}`);
+    if (!attribute) throw new Error(`Cannout find attribute ${input.moduleName}.${input.entityName}.${getSafeAttributeName(attr.name)}`);
     ar.attribute = attribute;
 
     let wid : pages.AttributeWidget | undefined;
