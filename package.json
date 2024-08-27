@@ -2,7 +2,8 @@
   "dependencies": {
     "dotenv": "^16.4.5",
     "mendixmodelsdk": "^4.89.0",
-    "mendixplatformsdk": "^5.1.3"
+    "mendixplatformsdk": "^5.1.3",
+    "zip": "^1.2.0"
   },
   "name": "pdf2mx",
   "version": "1.0.0",
@@ -23,8 +24,8 @@
     "serialize": "node dist/api/serialize.js",
     "dev": "nodemon --exec \"npm run build\" --watch src -e .ts",
     "build": "tsc",
-    "zip": "zip -r updateModel.zip . -x .env",
-    "upload": "aws lambda update-function-code --function-name updateModel --zip-file fileb://./updateModel.zip"
+    "zip": "7z a -tzip pdf2mx.zip .",
+    "upload": "aws lambda update-function-code --function-name pdf2mx --zip-file fileb://./pdf2mx.zip --region us-east-1"
   },
   "author": "Conner Charlebois & Luke Karlovich",
   "license": "ISC"
