@@ -482,22 +482,22 @@ const JSON_MODEL: IInputModel = {
     ],
 };
 
-async function main() {
+async function main(data: IInputModel) {
     /**
      * remove dupes from input
      */
     const dedupedAttributes: IMendixAttribute[] = [];
-    JSON_MODEL.attributes.forEach((attr) => {
+    data.attributes.forEach((attr) => {
         if (dedupedAttributes.find((existing) => existing.name === attr.name)) {
             return;
         }
         dedupedAttributes.push(attr);
     });
     const cleanedInput: IInputModel = {
-        ...JSON_MODEL,
+        ...data,
         attributes: dedupedAttributes,
     };
-    if (JSON_MODEL.attributes.length != cleanedInput.attributes.length) {
+    if (data.attributes.length != cleanedInput.attributes.length) {
         console.warn(
             `Removed ${JSON_MODEL.attributes.length - cleanedInput.attributes.length
             } duplicate attributes`
@@ -507,16 +507,15 @@ async function main() {
     const {model, workingCopy} = await connectToModel();
     await createEntity(cleanedInput, model, workingCopy);
     await createPage(cleanedInput, model, workingCopy);
-    await commit(workingCopy, model, `Add Entity ${JSON_MODEL.moduleName}.${JSON_MODEL.entityName} and page.`);
+    await commit(workingCopy, model, `Add Entity ${data.moduleName}.${data.entityName} and page.`);
     // now, create the page from the entity;
 }
 
 exports.handler = async (event: any) => {
     try {
         console.log("Received event:", JSON.stringify(event, null, 2));
-        
         // Call the main function
-        await main();
+        await main(event as IInputModel);
 
         return {
             statusCode: 200,
