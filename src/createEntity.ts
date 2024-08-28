@@ -4,7 +4,12 @@ import { commit, connectToModel } from "./connect"
 export interface IMendixAttribute {
     name: string,
     label?: string,
-    type: "Boolean" | "DateTime" | "Decimal" | "Enumeration" | "Integer" | "Long" | "String"
+    type: "Boolean" | "DateTime" | "Decimal" | "Enumeration" | "Integer" | "Long" | "String",
+    top: Number,
+    row: Number,
+    left: Number,
+    height: Number,
+    width: Number
 }
 export interface IInputModel {
     attributes: IMendixAttribute[],
