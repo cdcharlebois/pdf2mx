@@ -5,7 +5,7 @@
  */
 
 import "dotenv/config";
-import { connectToModel } from "./connect";
+import { connectToModel, commit } from "./connect";
 import { IInputModel, IMendixAttribute, createEntity } from "./createEntity";
 import { createPage } from "./addPage";
 
@@ -504,8 +504,10 @@ async function main() {
         );
     }
 
-    await createEntity(cleanedInput);
-    await createPage(cleanedInput);
+    const {model, workingCopy} = await connectToModel();
+    await createEntity(cleanedInput, model, workingCopy);
+    await createPage(cleanedInput, model, workingCopy);
+    await commit(workingCopy, model, `Add Entity ${JSON_MODEL.moduleName}.${JSON_MODEL.entityName} and page.`);
     // now, create the page from the entity;
 }
 

@@ -1,7 +1,8 @@
-import { pages, projects, JavaScriptSerializer, domainmodels, datatypes, IModel, texts } from "mendixmodelsdk";
+import { pages, projects, JavaScriptSerializer, domainmodels, datatypes, IModel, texts, IWorkingCopy } from "mendixmodelsdk";
 import fs from "fs";
 import { commit, connectToModel } from "./connect";
 import { IInputModel, IMendixAttribute, getSafeAttributeName } from "./createEntity";
+import { OnlineWorkingCopy } from "mendixplatformsdk";
 
 
 async function createSamplePage() {    
@@ -82,8 +83,8 @@ function createSaveButton(model: IModel) : pages.ActionButton {
     
 }
 
-export async function createPage(input: IInputModel) {
-    const {model, workingCopy} = await connectToModel();
+export async function createPage(input: IInputModel, model: IModel, workingCopy: OnlineWorkingCopy) {
+    // const {model, workingCopy} = await connectToModel();
     const entityName = `${input.moduleName}.${input.entityName}`;
     const pageName = `${input.entityName}_NewEdit`
     const module = model.allModules().find(m => m.name === input.moduleName);
@@ -135,9 +136,7 @@ export async function createPage(input: IInputModel) {
     page.layoutCall = lc;
     
     pv.pageParameter = pp;
-    
-    
-    await commit(workingCopy, model, `add Page ${pageName}`);
+
 }
 
 // createSamplePage();

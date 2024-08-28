@@ -1,5 +1,6 @@
-import { IModel, domainmodels, projects } from "mendixmodelsdk";
+import { IModel, IWorkingCopy, domainmodels, projects } from "mendixmodelsdk";
 import { commit, connectToModel } from "./connect"
+import { OnlineWorkingCopy } from "mendixplatformsdk";
 
 export interface IMendixAttribute {
     name: string,
@@ -74,8 +75,8 @@ function createAttribute(model: IModel, data: IMendixAttribute) : domainmodels.A
     return attr;
 }
 
-export async function createEntity(input: IInputModel) {
-    const {model, workingCopy} = await connectToModel();
+export async function createEntity(input: IInputModel, model: IModel, workingCopy: OnlineWorkingCopy) {
+    // const {model, workingCopy} = await connectToModel();
     const m = model.allModules().find(module => module.name === input.moduleName)
     if (!m) {
         throw new Error(`Unknown module: ${input.moduleName}`);
@@ -92,8 +93,6 @@ export async function createEntity(input: IInputModel) {
     await m.domainModel.load();
 
     m.domainModel.entities.push(entity);
-
-    await commit(workingCopy, model, `Add Entity ${input.moduleName}.${input.entityName}`);
 
 
 }
