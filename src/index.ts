@@ -8,6 +8,13 @@ import "dotenv/config";
 import { connectToModel, commit } from "./connect";
 import { IInputModel, IMendixAttribute, createEntity } from "./createEntity";
 import { createPage } from "./addPage";
+const {BRANCH} = process.env;
+
+export interface IParams {
+    mendix_token: string,
+    app_id: string,
+    branch: string
+}
 
 const JSON_MODEL: IInputModel = {
     moduleName: "GeneratedModule",
@@ -482,7 +489,7 @@ const JSON_MODEL: IInputModel = {
     ],
 };
 
-async function main(data: IInputModel) {
+async function main(data: IInputModel, params: IParams) {
     /**
      * remove dupes from input
      */
@@ -504,10 +511,10 @@ async function main(data: IInputModel) {
         );
     }
 
-    const {model, workingCopy} = await connectToModel();
+    const {model, workingCopy} = await connectToModel(params);
     await createEntity(cleanedInput, model, workingCopy);
     await createPage(cleanedInput, model, workingCopy);
-    await commit(workingCopy, model, `Add Entity ${data.moduleName}.${data.entityName} and page.`);
+    await commit(workingCopy, model, `Add Entity ${data.moduleName}.${data.entityName} and page.`, params.branch || BRANCH as string);
     // now, create the page from the entity;
 }
 
@@ -515,7 +522,7 @@ exports.handler = async (event: any) => {
     try {
         console.log("Received event:", JSON.stringify(event, null, 2));
         // Call the main function
-        await main(event as IInputModel);
+        await main(event.data as IInputModel, event.params as IParams);
 
         return {
             statusCode: 200,

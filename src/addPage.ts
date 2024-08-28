@@ -5,26 +5,26 @@ import { IInputModel, IMendixAttribute, getSafeAttributeName } from "./createEnt
 import { OnlineWorkingCopy } from "mendixplatformsdk";
 
 
-async function createSamplePage() {    
-    const res = await connectToModel();
-    const { model, workingCopy } = res;
-    const p = model.allProjects().find(project => true);
-    if (!p) {
-        throw new Error("failed to find a project");
-    }
+// async function createSamplePage() {    
+//     const res = await connectToModel();
+//     const { model, workingCopy } = res;
+//     const p = model.allProjects().find(project => true);
+//     if (!p) {
+//         throw new Error("failed to find a project");
+//     }
 
-    const layoutCall = pages.LayoutCall.create(model);
-    layoutCall.layout = model.findLayoutByQualifiedName("Atlas_Core.Atlas_Default")
+//     const layoutCall = pages.LayoutCall.create(model);
+//     layoutCall.layout = model.findLayoutByQualifiedName("Atlas_Core.Atlas_Default")
    
-    const m = projects.Module.createIn(p);
-    m.name = "SampleModule"
-    const f = projects.Folder.createIn(m);
-    f.name = "SampleFolder" 
-    const page = pages.Page.createIn(f);
-    page.name = "SamplePage";
-    page.layoutCall = layoutCall;
-    await commit(workingCopy, model, "added sample page")
-}
+//     const m = projects.Module.createIn(p);
+//     m.name = "SampleModule"
+//     const f = projects.Folder.createIn(m);
+//     f.name = "SampleFolder" 
+//     const page = pages.Page.createIn(f);
+//     page.name = "SamplePage";
+//     page.layoutCall = layoutCall;
+//     await commit(workingCopy, model, "added sample page")
+// }
 
 function createInputForAttribute(attr: IMendixAttribute, input: IInputModel, model: IModel, index: Number) : pages.Widget {
     const ar = domainmodels.AttributeRef.create(model);

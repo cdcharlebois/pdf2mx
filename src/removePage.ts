@@ -21,7 +21,7 @@ async function deleteSamplePage() {
         } else {
             console.log("Didn't find the page")
         }
-        await commit(workingCopy, model, "removed sample page")
+        await commit(workingCopy, model, "removed sample page", BRANCH as string)
     } catch (e) {
         console.error(e);
     }

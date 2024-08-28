@@ -1,11 +1,14 @@
 import { IModel, JavaScriptSerializer } from "mendixmodelsdk";
 import fs from "fs"
 import { connectToModel } from "./connect";
+import { IParams } from ".";
 
 export enum IUnitType {
     page = "page",
     entity = "entity"
 }
+const {MENDIX_TOKEN, APP_ID, BRANCH} = process.env;
+
 async function serializeUnit(name: string, type: IUnitType) {
     const {model, workingCopy} = await connectToModel();
     let doc;
@@ -15,7 +18,7 @@ async function serializeUnit(name: string, type: IUnitType) {
             throw new Error(`document ${name} not found as ${type}`)
             // handleError(name, type);
         }
-        console.log("writing file")
+        console.log("writing file") 
         fs.writeFileSync(`./${name}_serialized.js`, JavaScriptSerializer.serializeToJs(await doc.load()))
         console.log("writing done")
     } else if (type === IUnitType.entity) {
