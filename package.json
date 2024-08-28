@@ -25,7 +25,8 @@
     "dev": "nodemon --exec \"npm run build\" --watch src -e .ts",
     "build": "tsc",
     "zip": "7z a -tzip pdf2mx.zip .",
-    "upload": "aws lambda update-function-code --function-name pdf2mx --zip-file fileb://./pdf2mx.zip --region us-east-1"
+    "zipmac": "zip -r updateModel.zip . -x .env",
+    "upload": "aws lambda update-function-code --function-name pdf2mx --zip-file fileb://./updateModel.zip --region us-east-1"
   },
   "author": "Conner Charlebois & Luke Karlovich",
   "license": "ISC"
